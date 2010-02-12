@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+  <title>Users: <%= controller.action_name %></title>
+  <%= stylesheet_link_tag 'scaffold' %>
+  <%= javascript_include_tag :defaults, 'validation' %>
+  <script type="text/javascript">
+      function checkUserExisted() {
+          console.log('checkuser');
+          var oldUsername = $F('old-username');
+          var username = $F('username');
+          if (username != "" && oldUsername != username) { // prevent user submit the same value
+              $('info').className = "message";
+              $('info').addClassName("loading").update("loading...").show();
+              new Ajax.Request('/users/check_existed/' + username, {
+                  method: 'get',
+                  onSuccess: function(request) {
+                      var msg = $('info');
+                      var valid = request.responseJSON.valid;
+                      if (!valid) Validate.fail("faild roi");
+                      var message = request.responseJSON.message;
+                      msg.removeClassName("loading").update("");
+                      msg.addClassName(valid ? "valid" : "error").update(message);
+                      $('old-username').value = username;
+                  },
+                  onFailure: function() {
+                      alert('failed');
+                  }
+              });
+          }
+      }
+      function initExistence(form_id, element_id, insertion) {
+          var old_element = document.createElement('input');
+          old_element.setAttribute('type', 'hidden');
+          old_element.setAttribute('id', element_id + "-tmp");
+          old_element.setAttribute('value', '');
+
+          var element_valid = document.createElement('input');
+          element_valid.setAttribute('type', 'hidden');
+          element_valid.setAttribute('id', element_id + "-valid");
+          element_valid.setAttribute('value', 'false');
+                  ;
+          $(form_id).appendChild(old_element);
+          $(form_id).appendChild(element_valid);
+      }
+      document.observe('dom:loaded', function() {
+          initExistence('frm-user','username', Insertion.After);
+          // **** USERNAME **** //
+          var username = new LiveValidation('username', {
+              validMessage: 'hop le',
+              onValid: function() {
+                  var span = this.createMessageSpan();
+                  this.insertMessage(span);
+                  this.addFieldClass();
+              },
+              wait: 500
+          });
+          username.add(Validate.Presence, { failureMessage: "Username is required!" });
+          username.add(Validate.Length, { maximum: 32, minimum: 3, failureMessage: "Username must have 6 to 32 characters!" });
+          username.add(Validate.Custom, ($F('username'),{ against: function(value, args) {
+              var valid = $F('username-valid');
+              if ($F('username-tmp') != $F('username')) {
+                  $('loading').show();
+                  new Ajax.Request('/users/check_existed/' + $F('username'), {
+                      method: 'get',
+                      asynchronous: false,
+                      onSuccess: function(request) {
+                          valid = request.responseJSON.valid;
+                          $('loading').hide();
+                      },
+                      onFailure: function() {
+                          valid = false;
+                      }
+                  });
+              }
+              $('username-tmp').value = $F('username');
+              $('username-valid').value = valid;
+              return valid;
+          }, failureMessage: "already used" }));
+
+          // **** EMAIL **** //
+          var email = new LiveValidation('email', {
+              validMessage: 'ok',
+              wait: 500,
+              onValid: function() {
+                  var span = this.createMessageSpan();
+                  this.insertMessage(span);
+                  this.addFieldClass();
+              }
+          });
+          email.add(Validate.Presence, { failureMessage: "Chua nhap emali" })
+          email.add(Validate.Email, { failureMessage: "Sai email!" })
+      })
+  </script>
+  <%= yield :head %>
+</head>
+<body>
+
+<p style="color: green"><%= flash[:notice] %></p>
+
+<%= yield %>
+
+</body>
+</html>
