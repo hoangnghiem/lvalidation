@@ -4,21 +4,26 @@
   <%= f.error_messages %>
 
   <p>
-    <%= f.label :username %><br />
-    <%= f.text_field :username, :id => "username" %>
-    <!--<input type="hidden" id="old-username" value="">-->
-    <span class="message loading" id="loading" style="display:none;">dang kiem tra...</span>
+    <%= f.label :username %><span class="require">*</span><br />    
+    <%= f.text_field :username, :id => "username", :class => "text" %>
   </p>
   <p>
-    <%= f.label :password %><br />
-    <%= f.text_field :password %>
+    <%= f.label :password %><span class="require">*</span><br />
+    <%= f.text_field :password, :id => "password", :class => "text" %>
+  </p>
+  <div id="meter-wrapper">
+    <div id="lv1" class="meter"></div>
+    <div id="lv2" class="meter"></div>
+    <div id="lv3" class="meter"></div>
+    <div id="lv4" class="meter"></div>
+  </div>
+  <div style="clear:both;"></div>
+  <p>
+    <%= f.label :email %><span class="require">*</span><br />
+    <%= f.text_field :email, :id => "email", :class => "text" %>
   </p>
   <p>
-    <%= f.label :email %><br />
-    <%= f.text_field :email, :id => "email" %>
-  </p>
-  <p>
-    <%= f.submit 'Create' %>
+    <%= f.submit 'Dang Ky', :class => "medium button" %>
   </p>
 <% end %>
 

@@ -41,8 +41,8 @@ Object.extend(LiveValidation, {
 
 LiveValidation.prototype = {
     
-  validClass: 'LV_valid',
-  invalidClass: 'LV_invalid',
+  validClass: 'valid',
+  invalidClass: 'error',
   messageClass: 'LV_validation_message',
   validFieldClass: 'LV_valid_field',
   invalidFieldClass: 'LV_invalid_field',

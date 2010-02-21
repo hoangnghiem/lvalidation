@@ -5,14 +5,33 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
   <title>Users: <%= controller.action_name %></title>
-  <%= stylesheet_link_tag 'scaffold' %>
+  <%= stylesheet_link_tag 'blueprint/screen', :media => "screen, projection" %>
+  <%= stylesheet_link_tag 'blueprint/print', :media => "print" %>
+  <!--[if lt IE 8]>
+    <%= stylesheet_link_tag 'blueprint/ie', :media => "screen, projection" %>
+  <![endif]-->
+  <%= stylesheet_link_tag 'blueprint/plugins/fancy-type/screen', :media => "screen, projection" %>
+  <%= stylesheet_link_tag 'application' %>
   <%= javascript_include_tag :defaults, 'validation' %>
   <script type="text/javascript">
-      function checkUserExisted() {
-          console.log('checkuser');
-          var oldUsername = $F('old-username');
+      function readOnlyMode() {
+          $('username-readonly').show();
+          $('username-readonly').display = 'inline-block';
+          $('change-link').show();
+          $('change-link').display = 'inline-block';
+          $('username').hide();
+          $('check-existed').hide();
+      }
+      function editMode() {
+          $('username-readonly').hide();
+          $('change-link').hide();
+          $('username').setValue($('username-readonly').innerHTML);
+          $('username').show();
+          $('check-existed').show();
+      }
+      function checkUserExisted(element_id) {
           var username = $F('username');
-          if (username != "" && oldUsername != username) { // prevent user submit the same value
+          if (username != "") { // prevent user submit the same value
               $('info').className = "message";
               $('info').addClassName("loading").update("loading...").show();
               new Ajax.Request('/users/check_existed/' + username, {
@@ -42,12 +61,28 @@
           element_valid.setAttribute('type', 'hidden');
           element_valid.setAttribute('id', element_id + "-valid");
           element_valid.setAttribute('value', 'false');
-                  ;
+          ;
           $(form_id).appendChild(old_element);
           $(form_id).appendChild(element_valid);
       }
-      document.observe('dom:loaded', function() {
-          initExistence('frm-user','username', Insertion.After);
+    document.observe('dom:loaded', function() {
+      $('frm-user').reset();
+      new ExistenceCheckSupport('username', '/users/check_existed/', {
+        'triggerLabel' : 'checkme',
+        'triggerClass' : 'blue large button',
+        'switcherLabel' : 'thay doi',
+        'switcherType' : 'button',
+        liveValidationFunctions: [
+          {fnc: Validate.Presence, params: { failureMessage: "Username is required!" }} ,
+          {fnc: Validate.Length, params: { maximum: 32, minimum: 3, failureMessage: "Username must have 6 to 32 characters!" }}
+        ]
+      });
+      new PasswordStrengthMeter('password', 'meter-wrapper');
+    });
+
+
+      /*document.observe('dom:loaded', function() {
+          initExistence('frm-user', 'username', Insertion.After);
           // **** USERNAME **** //
           var username = new LiveValidation('username', {
               validMessage: 'hop le',
@@ -93,7 +128,7 @@
           });
           email.add(Validate.Presence, { failureMessage: "Chua nhap emali" })
           email.add(Validate.Email, { failureMessage: "Sai email!" })
-      })
+      })*/
   </script>
   <%= yield :head %>
 </head>

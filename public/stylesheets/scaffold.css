@@ -51,23 +51,3 @@ a:hover { color: #fff; background-color:#000; }
   font-size: 12px;
   list-style: square;
 }
-
-.message {
-    padding:5px 28px;
-}
-.loading {
-    border:1px solid #bbb9b9;
-    background: #e0dddd url("/images/ajax-loader.gif") no-repeat 5px 6px;
-}
-
-.LV_valid {
-    padding:5px 28px;
-    border:1px solid #b5ccb5;
-    background: #dff0ce url("/images/accept.png") no-repeat 8px 6px;
-}
-.LV_invalid {
-    padding:5px 28px;
-    border:1px solid #ff6666;
-    background: #ffcccc url("/images/delete.png") no-repeat 8px 6px;
-}
-
